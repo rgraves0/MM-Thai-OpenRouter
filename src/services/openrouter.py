@@ -1,3 +1,4 @@
+# src/services/openrouter.py
 import os
 import requests
 
@@ -6,8 +7,8 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 def get_translation(text: str):
     url = "https://openrouter.ai/api/v1/chat/completions"
     
-    # အခမဲ့ + မြန်မာ/ထိုင်း အရမ်းကောင်းတဲ့ model
-    model = "google/gemma-2-27b-it:free"   # ဒါမှမဟုတ် "meta-llama/llama-3.1-8b-instruct:free"
+    # အခမဲ့ + တကယ်ရှိပြီး အလုပ်ဖြစ်တဲ့ model (အရမ်းကောင်းတယ်)
+    model = "google/gemma-2-9b-it:free"  # ဒါက တကယ် ရှိတယ်၊ အရမ်းမြန်တယ်၊ မြန်မာ+ထိုင်း အရမ်းကောင်းတယ်
     
     prompt = f"""
     You are the world's best Thai ↔ Myanmar dictionary.
@@ -46,7 +47,7 @@ def get_translation(text: str):
 
 def get_explanation(text: str):
     url = "https://openrouter.ai/api/v1/chat/completions"
-    model = "google/gemma-2-27b-it:free"
+    model = "google/gemma-2-9b-it:free"  # ဒီဟာ တကယ်ရှိတယ်
     
     prompt = f"""
     ให้คำอธิบายเชิงลึกสำหรับคำหรือวลีนี้: "{text}"
@@ -55,7 +56,7 @@ def get_explanation(text: str):
     - คำที่คล้ายกัน 3-5 คำ
     - ข้อควรระวัง (ถ้ามี)
     ตอบเป็นภาษาพม่าถ้าคำถามเป็นไทย
-    ตอบเป็นภาษาไทยถ้าคำถามเป็นพม่า
+    ตอบเป็นภาษาไทยถ้าคำถามเป็นพม่ာ
     """
     
     payload = {
@@ -75,5 +76,5 @@ def get_explanation(text: str):
         r = requests.post(url, json=payload, headers=headers, timeout=40)
         r.raise_for_status()
         return r.json()["choices"][0]["message"]["content"]
-    except:
+    except Exception as e:
         return "ไม่สามารถอธิบายเพิ่มเติมได้ในขณะนี้"
